@@ -29,7 +29,7 @@ test('manifest shape matches package.json', () => {
   assert.equal(ext, manifest);
   assert.equal(manifest.id, pkg.wranglerExtension.id);
   assert.deepEqual(manifest.requires, pkg.wranglerExtension.requires);
-  assert.equal(manifest.engines.wranglerApi, '^1.26.0');
+  assert.equal(manifest.engines.wranglerApi, '^1.27.0');
   assert.deepEqual(manifest.hideDispatchField, ['model']);
   const [rt] = manifest.runtimes;
   assert.equal(rt.id, 'bifrost');
