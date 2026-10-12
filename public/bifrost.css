@@ -1,0 +1,15 @@
+.bifrost-field { display: flex; flex-direction: column; gap: 6px; }
+.bifrost-field[hidden] { display: none; }
+.bifrost-status { margin: 0; font-size: 12px; color: var(--red-fg); }
+.bifrost-limits { margin: 0; padding-left: 18px; font-size: 12px; color: var(--muted, inherit); opacity: 0.85; }
+
+.bifrost-view { padding: 16px; overflow: auto; height: 100%; box-sizing: border-box; }
+.bifrost-view h2 { margin: 0 0 8px; font-size: 16px; }
+.bifrost-view h3 { margin: 16px 0 6px; font-size: 13px; }
+.bifrost-status-line { margin: 0; font-size: 13px; }
+.bifrost-status-line.bifrost-bad { color: var(--red-fg); }
+.bifrost-table { border-collapse: collapse; font-size: 12px; width: 100%; }
+.bifrost-table th, .bifrost-table td { padding: 3px 8px; text-align: left; border-bottom: 1px solid var(--border, rgba(127, 127, 127, 0.25)); white-space: nowrap; }
+.bifrost-table td.bifrost-error { white-space: normal; max-width: 320px; color: var(--red-fg); }
+.bifrost-card-link { background: none; border: 0; padding: 0; color: var(--accent, inherit); cursor: pointer; text-decoration: underline; font: inherit; }
+.bifrost-muted, .bifrost-empty { opacity: 0.7; }

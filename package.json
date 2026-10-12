@@ -1,0 +1,26 @@
+{
+  "name": "aw-bifrost",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Agent Wrangler extension: run Claude Code sessions on OpenAI models through a local Bifrost gateway.",
+  "license": "MIT",
+  "wranglerExtension": {
+    "id": "bifrost",
+    "label": "Bifrost (OpenAI)",
+    "description": "Adds a Bifrost runtime: Claude Code sessions that talk to OpenAI models through a Bifrost gateway you run yourself, with Bifrost's own cost on the card and a view of its request log.",
+    "author": "Alex Pezarro",
+    "requires": ["board:broadcast"],
+    "homepage": "https://github.com/alex-pezarro-portswigger/aw-bifrost"
+  },
+  "scripts": {
+    "test": "node --test 'server/*.test.js'"
+  },
+  "engines": {
+    "node": ">=22.5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alex-pezarro-portswigger/aw-bifrost.git"
+  }
+}

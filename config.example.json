@@ -1,0 +1,14 @@
+{
+  "$schema": "https://www.getbifrost.ai/schema",
+  "client": {
+    "enable_logging": true,
+    "enforce_auth_on_inference": false,
+    "allowed_headers": ["*"]
+  },
+  "providers": {
+    "anthropic": { "keys": [ { "name": "anthropic", "value": "env.ANTHROPIC_API_KEY", "models": ["*"], "weight": 1.0 } ] },
+    "openai":    { "keys": [ { "name": "openai",    "value": "env.OPENAI_API_KEY",    "models": ["*"], "weight": 1.0 } ] }
+  },
+  "config_store": { "enabled": true, "type": "sqlite", "config": { "path": "./config.db" } },
+  "logs_store":   { "enabled": true, "type": "sqlite", "config": { "path": "./logs.db" } }
+}
