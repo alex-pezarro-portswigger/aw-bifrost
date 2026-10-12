@@ -126,8 +126,8 @@ export default {
   defaultEnabled: true,
   dir,
   requires: ['board:broadcast'],
-  // 1.28.0: the runtime `cost` hook and `parentId` on fork wrapLaunch.
-  engines: { wranglerApi: '^1.28.0' },
+  // 1.29.0: the runtime `cost` hook and `parentId` on fork wrapLaunch.
+  engines: { wranglerApi: '^1.29.0' },
   hideDispatchField: ['model'],
 
   settings: [
