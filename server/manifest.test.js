@@ -22,7 +22,7 @@ function fakeHost(settings = {}) {
   const sent = [];
   return { sent, stores: { cards: memStore() }, settings: { all: () => ({ ...settings }), get: (k) => settings[k] }, broadcast: (f) => sent.push(f) };
 }
-const okFetch = async () => ({ ok: true, json: async () => ({ data: [{ id: 'gpt-5.5' }, { id: 'claude-opus-4-7' }] }) });
+const okFetch = async (u) => ({ ok: true, json: async () => (String(u).endsWith('/health') ? { status: 'ok' } : { data: [{ id: 'gpt-5.5' }, { id: 'claude-opus-4-7' }] }) });
 const downFetch = async () => { throw Object.assign(new Error('fetch failed'), { cause: { code: 'ECONNREFUSED' } }); };
 
 test('manifest shape matches package.json', () => {

@@ -189,11 +189,12 @@ function view(reg) {
       const status = h('p', { class: 'bifrost-status-line' });
       const totals = h('div');
       const recentEl = h('div');
-      el.append(h('div', { class: 'bifrost-view' },
+      const root = h('div', { class: 'bifrost-view' },
         h('h2', { text: 'Bifrost' }), status,
         h('h3', { text: 'Totals by model' }), totals,
-        h('h3', { text: 'Recent requests' }), recentEl));
-      ui = { status, totals, recent: recentEl, sessions: [], names: new Map() };
+        h('h3', { text: 'Recent requests' }), recentEl);
+      el.append(root);
+      ui = { root, status, totals, recent: recentEl, sessions: [], names: new Map() };
       drawStatus(null);
     },
     update(el, _session, graph) {
@@ -203,8 +204,9 @@ function view(reg) {
       ui.names = new Map(ui.sessions.map((s) => [s.sessionId, s.name || s.aiTitle || '']).filter(([, n]) => n));
       drawStatus(b);
       drawTotals(b);
-      // Poll recent rows only while the view is on screen.
-      const shown = el.isConnected && el.offsetParent !== null;
+      // Poll recent rows only while the view is on screen. The host is
+      // display: contents (no offsetParent), so test our own root.
+      const shown = ui.root.isConnected && ui.root.offsetParent !== null;
       if (shown && Date.now() - lastPoll > RECENT_POLL_MS) {
         lastPoll = Date.now();
         api.send({ type: 'bifrost-recent', limit: 200 });

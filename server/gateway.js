@@ -4,13 +4,16 @@ import { normaliseUrl } from './env.js';
 // No auth header is sent (Bifrost runs with inference auth off) and nothing
 // about a request is logged.
 
-export const TIMEOUT_MS = 2000;
+// Reachability is Bifrost's own /health (local, fast). The model list goes
+// upstream to every provider, which can take a few seconds.
+export const PING_TIMEOUT_MS = 2000;
+export const MODELS_TIMEOUT_MS = 10000;
 
-export async function listModels(url, { fetchImpl = globalThis.fetch, timeoutMs = TIMEOUT_MS } = {}) {
+async function getJson(url, path, { fetchImpl = globalThis.fetch, timeoutMs }) {
   let base;
   try { base = normaliseUrl(url); } catch (err) { return { ok: false, error: err.message }; }
   try {
-    const res = await fetchImpl(`${base}/anthropic/v1/models`, { signal: AbortSignal.timeout(timeoutMs) });
+    const res = await fetchImpl(`${base}${path}`, { signal: AbortSignal.timeout(timeoutMs) });
     if (!res.ok) return { ok: false, error: `HTTP ${res.status}` };
     return { ok: true, body: await res.json() };
   } catch (err) {
@@ -18,9 +21,17 @@ export async function listModels(url, { fetchImpl = globalThis.fetch, timeoutMs 
   }
 }
 
-// Reachability plus the model list, refreshed at most every `ttlMs`, for the
+export function ping(url, { fetchImpl, timeoutMs = PING_TIMEOUT_MS } = {}) {
+  return getJson(url, '/health', { fetchImpl, timeoutMs });
+}
+
+export function listModels(url, { fetchImpl, timeoutMs = MODELS_TIMEOUT_MS } = {}) {
+  return getJson(url, '/anthropic/v1/models', { fetchImpl, timeoutMs });
+}
+
+// A cached call (ping by default), refreshed at most every `ttlMs`, for the
 // ~4s graph tick to read without waiting on the network.
-export function createGatewayStatus({ ttlMs = 15000, list = listModels, now = Date.now } = {}) {
+export function createGatewayStatus({ ttlMs = 15000, list = ping, now = Date.now } = {}) {
   let state = { url: null, at: 0, result: null };
   let inflight = null;
   return {

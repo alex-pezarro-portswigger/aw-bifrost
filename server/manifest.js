@@ -3,7 +3,7 @@ import { CardStore } from './card-store.js';
 import {
   DEFAULT_URL, DEFAULT_BACKGROUND_MODEL, buildEnvPrefix, wrapInner, isOpenAiModel, normaliseUrl,
 } from './env.js';
-import { listModels, createGatewayStatus } from './gateway.js';
+import { ping, listModels, createGatewayStatus } from './gateway.js';
 import { createModelCache } from './models.js';
 import { createLogsReader, readRecent, costForEntry, expandPath } from './logs.js';
 
@@ -26,8 +26,8 @@ export function resolveSettings(s = {}) {
 
 // Built per manifest so tests get their own caches.
 export function createBifrost({ fetchImpl, now } = {}) {
-  const list = (url) => listModels(url, fetchImpl ? { fetchImpl } : {});
-  const gateway = createGatewayStatus({ list, ...(now ? { now } : {}) });
+  const opts = fetchImpl ? { fetchImpl } : {};
+  const gateway = createGatewayStatus({ list: (url) => ping(url, opts), ...(now ? { now } : {}) });
   const models = createModelCache();
   const logs = createLogsReader(now ? { now } : {});
 
@@ -66,7 +66,6 @@ export function createBifrost({ fetchImpl, now } = {}) {
       const cfg = resolveSettings(host.settings.all());
       gateway.poke(cfg.url);
       const status = gateway.peek(cfg.url);
-      if (status) models.note(status);
       const summary = cfg.logsDb ? logs.summary(cfg.logsDb) : { ok: false, reason: 'logs.db path not set' };
       return {
         bifrost: {
@@ -85,7 +84,7 @@ export function createBifrost({ fetchImpl, now } = {}) {
   // Handlers answer by broadcast (`ext:bifrost`), the browser half's only inbound channel.
   async function modelsHandler(msg, host) {
     const cfg = resolveSettings(host.settings.all());
-    const answer = models.note(await gateway.refresh(cfg.url));
+    const answer = models.note(await listModels(cfg.url, opts));
     host.broadcast({ kind: 'models', ...answer });
   }
 
