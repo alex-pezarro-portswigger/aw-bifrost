@@ -18,31 +18,6 @@ Requires Agent Wrangler host API 1.29.0 or later and Node 22.5 or later.
 
 In Agent Wrangler, open **Settings → Extensions → + Add extension** and paste `https://github.com/alex-pezarro-portswigger/aw-bifrost`. It asks for one capability, `board:broadcast`, which it uses to answer its own dialog and view.
 
-## Run Bifrost
-
-1. Download the macOS arm64 binary into a directory under `~/Projects` (endpoint security on PortSwigger Macs SIGKILLs it elsewhere). Tested with v2.2.6:
-
-   ```sh
-   mkdir -p ~/Projects/bifrost && cd ~/Projects/bifrost
-   curl -fLo bifrost https://downloads.getmaxim.ai/bifrost/v2.2.6/darwin/arm64/bifrost-http
-   shasum -a 256 bifrost
-   # v2.2.6 darwin/arm64: dc95faca9f7352ea85264242dddf14db64b392e512bdcb170cc99e6e6e2583da
-   chmod +x bifrost
-   ```
-
-2. Start it with the script in this repo. Keys come from 1Password with `op read` and only ever live in the gateway process's environment; `config.json` refers to them as `env.OPENAI_API_KEY` and `env.ANTHROPIC_API_KEY`.
-
-   ```sh
-   BIFROST_BIN=~/Projects/bifrost/bifrost \
-   BIFROST_APP_DIR=~/Projects/bifrost/app \
-   BIFROST_PORT=8080 \
-   OPENAI_OP_REF='op://<vault>/<item>/password' \
-   ANTHROPIC_OP_REF='op://<vault>/<item>/password' \
-   scripts/run-bifrost.sh
-   ```
-
-   On first run it copies `config.example.json` into the app dir: logging on, inference auth off, all headers allowed, sqlite config and log stores. It binds `127.0.0.1` only.
-
 ## Settings
 
 | Setting | Default | What it does |
