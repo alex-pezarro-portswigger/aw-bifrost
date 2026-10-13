@@ -25,6 +25,7 @@ In Agent Wrangler, open **Settings → Extensions → + Add extension** and past
 | Bifrost URL | `http://127.0.0.1:8080` | Where the gateway listens. |
 | Bifrost logs.db | none | Path to `logs.db` in Bifrost's app dir (`~` allowed). Needed for card cost and the view; opened read-only. |
 | Background model | `gpt-5.4-mini` | The OpenAI model for Claude Code's small background calls (the haiku slot). |
+| Disable 1M context | off | Off tags the main model with `[1m]` so Claude Code uses a 1M-token context window instead of 200k. Turn on for models without 1M support. |
 | Allow experimental betas | off | Off sets `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1`, because Anthropic-only beta headers can break OpenAI requests. |
 | Ask Bifrost not to log content | off | Sends `x-bf-disable-content-logging: true`. Bifrost v2.2.6 ignored this header in testing. |
 

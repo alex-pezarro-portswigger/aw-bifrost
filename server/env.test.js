@@ -11,11 +11,16 @@ test('buildEnv sets exactly the expected variables', () => {
   assert.equal(env.ANTHROPIC_BASE_URL, 'http://127.0.0.1:8090/anthropic');
   assert.equal(env.ANTHROPIC_AUTH_TOKEN, 'bifrost-local');
   for (const k of ['ANTHROPIC_MODEL', 'ANTHROPIC_DEFAULT_OPUS_MODEL', 'ANTHROPIC_DEFAULT_SONNET_MODEL', 'CLAUDE_CODE_SUBAGENT_MODEL']) {
-    assert.equal(env[k], 'openai/gpt-5.5', k);
+    assert.equal(env[k], 'openai/gpt-5.5[1m]', k);
   }
   assert.equal(env.ANTHROPIC_DEFAULT_HAIKU_MODEL, 'openai/gpt-5.4-mini');
   assert.equal(env.ANTHROPIC_CUSTOM_HEADERS, 'x-bf-session-id: card-1');
   assert.equal(env.CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS, '1');
+});
+
+test('oneMillionContext off drops the [1m] suffix', () => {
+  const env = buildEnv({ ...base, oneMillionContext: false });
+  assert.equal(env.ANTHROPIC_MODEL, 'openai/gpt-5.5');
 });
 
 test('toggles: betas allowed, content logging off', () => {

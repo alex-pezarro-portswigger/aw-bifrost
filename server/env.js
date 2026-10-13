@@ -50,12 +50,14 @@ export function isOpenAiModel(model) {
 
 // { name: value } for one launch. Throws on anything that isn't a plain id, as
 // defence in depth on top of the quoting.
-export function buildEnv({ url, model, backgroundModel, cardId, disableBetas = true, noContentLogging = false }) {
+export function buildEnv({ url, model, backgroundModel, cardId, disableBetas = true, noContentLogging = false, oneMillionContext = true }) {
   if (!isOpenAiModel(model)) throw new Error(`Not an OpenAI model id: ${JSON.stringify(model)}`);
   const bg = backgroundModel || DEFAULT_BACKGROUND_MODEL;
   if (!MODEL_RE.test(bg)) throw new Error(`Not a model id: ${JSON.stringify(bg)}`);
   if (typeof cardId !== 'string' || !ID_RE.test(cardId)) throw new Error(`Not a card id: ${JSON.stringify(cardId)}`);
-  const main = `openai/${model}`;
+  // Claude Code assumes a 200k window unless the name ends in `[1m]`; it strips
+  // the suffix before the request, so Bifrost still sees `openai/<model>`.
+  const main = `openai/${model}${oneMillionContext ? '[1m]' : ''}`;
   const headers = [`x-bf-session-id: ${cardId}`];
   if (noContentLogging) headers.push('x-bf-disable-content-logging: true');
   const env = {
