@@ -41,6 +41,12 @@ export function createBifrost({ fetchImpl, now } = {}) {
     return null;
   }
 
+  // The runtime owns its models, so spawn_session asks here instead of checking
+  // them against Claude's list (see Agent Wrangler's runtime `validateModel`).
+  function validateModel({ model }) {
+    return isOpenAiModel(model) ? null : 'Pick an OpenAI model';
+  }
+
   // The card id is the record key; a fork's first launch reads its parent's
   // (onFork copies it right after).
   async function wrapLaunch({ inner, sessionId, parentId, settings, host }) {
@@ -96,7 +102,7 @@ export function createBifrost({ fetchImpl, now } = {}) {
     host.broadcast({ kind: 'recent', ...res });
   }
 
-  return { preflight, wrapLaunch, cost, graph, modelsHandler, recentHandler };
+  return { preflight, validateModel, wrapLaunch, cost, graph, modelsHandler, recentHandler };
 }
 
 const bifrost = createBifrost();
@@ -127,8 +133,8 @@ export default {
   defaultEnabled: true,
   dir,
   requires: ['board:broadcast'],
-  // 1.29.0: the runtime `cost` hook and `parentId` on fork wrapLaunch.
-  engines: { wranglerApi: '^1.29.0' },
+  // 1.30.0: the runtime `validateModel` hook, so spawn_session accepts OpenAI models.
+  engines: { wranglerApi: '^1.30.0' },
   hideDispatchField: ['model'],
 
   settings: [
@@ -160,6 +166,7 @@ export default {
     id: RUNTIME_ID,
     label: 'Bifrost (OpenAI)',
     preflight: bifrost.preflight,
+    validateModel: bifrost.validateModel,
     wrapLaunch: bifrost.wrapLaunch,
     cost: bifrost.cost,
   }],
