@@ -41,11 +41,12 @@ test('manifest shape matches package.json', () => {
 });
 
 test('settings resolve with fallbacks', () => {
-  assert.deepEqual(resolveSettings({}), { url: 'http://127.0.0.1:8080', logsDb: null, backgroundModel: 'gpt-5.4-mini', disableBetas: true, noContentLogging: false });
+  assert.deepEqual(resolveSettings({}), { url: 'http://127.0.0.1:8080', logsDb: null, backgroundModel: 'gpt-5.4-mini', disableBetas: true, noContentLogging: false, oneMillionContext: true });
   const r = resolveSettings({ url: 'http://127.0.0.1:8090/', logsDb: '~/x/logs.db', allowBetas: true, noContentLogging: true });
   assert.equal(r.url, 'http://127.0.0.1:8090');
   assert.equal(r.logsDb, path.join(os.homedir(), 'x/logs.db'));
   assert.equal(r.disableBetas, false);
+  assert.equal(resolveSettings({ disable1mContext: true }).oneMillionContext, false);
 });
 
 test('preflight refuses a non-claude agent, a missing model and an unreachable gateway', async () => {
@@ -67,7 +68,7 @@ test('dispatch stores the model; wrapLaunch uses it, the parent on fork, and thr
   assert.equal(host.stores.cards.get('q'), undefined);
 
   const cmd = await b.wrapLaunch({ inner: 'env -u CLAUDECODE claude --model opus', sessionId: 'p', settings: {}, host });
-  assert.match(cmd, /ANTHROPIC_DEFAULT_OPUS_MODEL='openai\/gpt-5\.5'/);
+  assert.match(cmd, /ANTHROPIC_DEFAULT_OPUS_MODEL='openai\/gpt-5\.5\[1m\]'/);
   assert.match(cmd, /ANTHROPIC_CUSTOM_HEADERS='x-bf-session-id: p'/);
   assert.match(cmd, /env -u CLAUDECODE claude --model opus$/);
 

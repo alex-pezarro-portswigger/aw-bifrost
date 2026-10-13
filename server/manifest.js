@@ -21,6 +21,7 @@ export function resolveSettings(s = {}) {
     backgroundModel: (s.backgroundModel && String(s.backgroundModel).trim()) || DEFAULT_BACKGROUND_MODEL,
     disableBetas: s.allowBetas !== true,
     noContentLogging: s.noContentLogging === true,
+    oneMillionContext: s.disable1mContext !== true,
   };
 }
 
@@ -49,7 +50,7 @@ export function createBifrost({ fetchImpl, now } = {}) {
     const cfg = resolveSettings(settings);
     const prefix = buildEnvPrefix({
       url: cfg.url, model: rec.model, backgroundModel: cfg.backgroundModel, cardId: sessionId,
-      disableBetas: cfg.disableBetas, noContentLogging: cfg.noContentLogging,
+      disableBetas: cfg.disableBetas, noContentLogging: cfg.noContentLogging, oneMillionContext: cfg.oneMillionContext,
     });
     return wrapInner(inner, prefix);
   }
@@ -139,6 +140,8 @@ export default {
       help: 'The OpenAI model Claude Code uses for its small background calls (the haiku slot).' },
     { key: 'allowBetas', type: 'toggle', label: 'Allow experimental betas',
       help: 'Off sets CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1, because Anthropic-only beta headers can break OpenAI requests.' },
+    { key: 'disable1mContext', type: 'toggle', label: 'Disable 1M context',
+      help: 'Off tags the main model with [1m] so Claude Code treats its context window as 1M tokens instead of 200k. Turn on for models that do not support 1M.' },
     { key: 'noContentLogging', type: 'toggle', label: 'Ask Bifrost not to log content',
       help: 'Sends x-bf-disable-content-logging: true. Bifrost v2.2.6 ignored it in testing; set client.disable_content_logging in Bifrost\'s config to be sure.' },
   ],
