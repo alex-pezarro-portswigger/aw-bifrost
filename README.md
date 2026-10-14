@@ -12,7 +12,7 @@ It adds:
 
 **Other sessions are untouched.** Only cards dispatched with Runtime = Bifrost get the gateway environment (`ANTHROPIC_BASE_URL`, `ANTHROPIC_AUTH_TOKEN`, the model slots). Every other session, including Claude-model sessions on your claude.ai login, launches exactly as before.
 
-Requires Agent Wrangler host API 1.29.0 or later and Node 22.5 or later.
+Requires Agent Wrangler host API 1.30.0 or later and Node 22.5 or later.
 
 ## Install
 

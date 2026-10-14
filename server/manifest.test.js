@@ -29,11 +29,11 @@ test('manifest shape matches package.json', () => {
   assert.equal(ext, manifest);
   assert.equal(manifest.id, pkg.wranglerExtension.id);
   assert.deepEqual(manifest.requires, pkg.wranglerExtension.requires);
-  assert.equal(manifest.engines.wranglerApi, '^1.29.0');
+  assert.equal(manifest.engines.wranglerApi, '^1.30.0');
   assert.deepEqual(manifest.hideDispatchField, ['model']);
   const [rt] = manifest.runtimes;
   assert.equal(rt.id, 'bifrost');
-  for (const k of ['preflight', 'wrapLaunch', 'cost']) assert.equal(typeof rt[k], 'function', k);
+  for (const k of ['preflight', 'validateModel', 'wrapLaunch', 'cost']) assert.equal(typeof rt[k], 'function', k);
   assert.equal('buildLaunch' in rt, false);
   assert.deepEqual(manifest.handlers.map((h) => h.type), ['bifrost-models', 'bifrost-recent']);
   assert.ok(fs.existsSync(path.join(manifest.dir, manifest.client)));
@@ -47,6 +47,13 @@ test('settings resolve with fallbacks', () => {
   assert.equal(r.logsDb, path.join(os.homedir(), 'x/logs.db'));
   assert.equal(r.disableBetas, false);
   assert.equal(resolveSettings({ disable1mContext: true }).oneMillionContext, false);
+});
+
+test('validateModel accepts OpenAI ids only', () => {
+  const b = createBifrost();
+  assert.equal(b.validateModel({ agent: 'claude', model: 'gpt-6-sol' }), null);
+  assert.equal(b.validateModel({ agent: 'claude', model: 'opus' }), 'Pick an OpenAI model');
+  assert.equal(b.validateModel({ agent: 'claude', model: null }), 'Pick an OpenAI model');
 });
 
 test('preflight refuses a non-claude agent, a missing model and an unreachable gateway', async () => {
